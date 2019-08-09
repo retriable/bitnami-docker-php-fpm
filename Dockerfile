@@ -13,5 +13,11 @@ ENV BITNAMI_APP_NAME="php-fpm" \
     PATH="/opt/bitnami/php/bin:/opt/bitnami/php/sbin:$PATH"
 
 EXPOSE 9000
+
+ENV IMAGEMAGICK_VERSION=7.0.8-59 IMAGICK_VERSION=3.4.4
+RUN install_packages gcc make autoconf
+RUN wget ftp://ftp.imagemagick.org/pub/ImageMagick/ImageMagick-$IMAGEMAGICK_VERSION.tar.gz && tar -zxf ImageMagick-$IMAGEMAGICK_VERSION.tar.gz && cd ImageMagick-$IMAGEMAGICK_VERSION && ./configure --prefix=/usr/local/imagemagick && make && make install && cd .. && rm -rf ImageMagick-$IMAGEMAGICK_VERSION*
+RUN wget http://pecl.php.net/get/imagick-$IMAGICK_VERSION.tgz && tar -zxf imagick-$IMAGICK_VERSION.tgz && cd imagick-$IMAGICK_VERSION && phpize && ./configure --with-php-config=/opt/bitnami/php/bin/php-config --with-imagick=/usr/local/imagemagick && make && make install && cd .. && rm -rf imagick-$IMAGICK_VERSION*
+
 WORKDIR /app
 CMD [ "php-fpm", "-F", "--pid", "/opt/bitnami/php/tmp/php-fpm.pid", "-y", "/opt/bitnami/php/etc/php-fpm.conf" ]
